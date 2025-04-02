@@ -70,6 +70,7 @@ export const AuthProvider = ({ children }) => {
       navigate("/profile");
       return null;
     } catch (error) {
+      console.log(error);
       return "Network error occurred";
     }
   };
