@@ -11,6 +11,8 @@ var corsOptions = {
     optionsSuccessStatus: 200
 }
 
+console.log(FRONTEND_URL);
+
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('', routes);
