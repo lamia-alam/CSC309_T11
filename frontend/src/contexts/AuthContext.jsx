@@ -1,138 +1,110 @@
-// src/contexts/authContext.jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
+/*
+ * This provider should export a `user` context state that is
+ * set (to non-null) when:
+ *     1. a hard reload happens while a user is logged in.
+ *     2. the user just logged in.
+ * `user` should be set to null when:
+ *     1. a hard reload happens when no users are logged in.
+ *     2. the user just logged out.
+ */
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const BACKEND_URL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
-  // For Vite, environment variables must start with 'VITE_'
-  // e.g. create a .env file with: VITE_BACKEND_URL=http://localhost:3000
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-
-  /**
-   * On component mount, check if we have a stored token.
-   * If so, attempt to fetch user data from /user/me and set user state.
-   * If the token is invalid, remove it and set user to null.
+  /*
+   * Logout the currently authenticated user.
+   *
+   * @remarks This function will always navigate to "/".
    */
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetch(`${BACKEND_URL}/user/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error('Invalid token');
-          return res.json();
-        })
-        .then((data) => {
-          setUser(data.user);
-        })
-        .catch((err) => {
-          console.error(err);
-          localStorage.removeItem('token');
-          setUser(null);
-        });
-    } else {
-      setUser(null);
-    }
-  }, [BACKEND_URL]);
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate("/");
+  };
 
   /**
    * Login a user with their credentials.
-   * 
-   * 1. Send credentials to /login
-   * 2. If failure, return the error message
-   * 3. If success, store the token, fetch user data, set user context, navigate to /profile
+   *
+   * @remarks Upon success, navigates to "/profile".
+   * @param {string} username - The username of the user.
+   * @param {string} password - The password of the user.
+   * @returns {string} - Upon failure, Returns an error message.
    */
   const login = async (username, password) => {
     try {
       const response = await fetch(`${BACKEND_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ username, password }),
       });
+      const data = await response.json();
 
       if (!response.ok) {
-        // On failure, the backend returns { "message": "error message" }
-        const errorData = await response.json();
-        return errorData.message;
+        return data.message || "Login failed";
       }
 
-      const data = await response.json();
-      const { token } = data;
+      localStorage.setItem("token", data.token);
 
-      // Store the token
-      localStorage.setItem('token', token);
-
-      // Retrieve user data from /user/me
       const userResponse = await fetch(`${BACKEND_URL}/user/me`, {
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${data.token}`,
         },
       });
+      const userData = await userResponse.json();
 
       if (!userResponse.ok) {
-        const errorData = await userResponse.json();
-        return errorData.message;
+        return userData.message || "Failed to fetch user data";
       }
 
-      const userData = await userResponse.json();
       setUser(userData.user);
-
-      // Navigate to /profile on success
-      navigate('/profile');
-    } catch (err) {
-      return err.message;
+      navigate("/profile");
+      return null;
+    } catch (error) {
+      return "Network error occurred";
     }
   };
 
   /**
    * Registers a new user.
-   * 
-   * 1. Send user data to /register
-   * 2. If backend responds with an error, return the error message
-   * 3. If success, navigate to /success (or wherever your instructions say)
+   *
+   * @remarks Upon success, navigates to "/".
+   * @param {Object} userData - The data of the user to register.
+   * @returns {string} - Upon failure, returns an error message.
    */
-  const register = async ({ username, firstname, lastname, password }) => {
+  const register = async (userData) => {
     try {
       const response = await fetch(`${BACKEND_URL}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, firstname, lastname, password }),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
       });
+      const data = await response.json();
 
       if (!response.ok) {
-        // For errors, e.g. 409 Conflict, you get { "message": "error message" }
-        const errorData = await response.json();
-        return errorData.message;
+        return data.message || "Registration failed";
       }
 
-      // On success, the server returns { "message": "User registered successfully" }
-      navigate('/success');
-    } catch (err) {
-      return err.message;
+      navigate("/success");
+      return null;
+    } catch (error) {
+      return "Network error occurred";
     }
   };
 
-  /**
-   * Logout the currently authenticated user.
-   * 
-   * Remove the token from localStorage and set user to null,
-   * then navigate to the homepage.
-   */
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    navigate('/');
-  };
-
   return (
-    <AuthContext.Provider value={{ user, login, logout, register }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
