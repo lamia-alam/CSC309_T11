@@ -8,7 +8,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 var corsOptions = {
     origin: FRONTEND_URL,
-    optionsSuccessStatus: 200
+    //optionsSuccessStatus: 200
 }
 
 console.log(FRONTEND_URL);
