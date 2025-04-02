@@ -1,27 +1,24 @@
+
+require("dotenv").config();     
 const express = require("express");
+const cors = require("cors");
 const routes = require("./routes");
-var cors = require('cors')
 
 const app = express();
 
+module.exports = app;
+
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');  // Allow all domains (or specify a domain)
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');  // Allowed HTTP methods
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');  // Allowed headers
-  next();
-});
+// If your frontend is on http://localhost:5173,
+// allow that origin in the CORS config:
+app.use(cors({
+  origin: FRONTEND_URL,
+  // If you need cookies or other credentials, add: credentials: true
+}));
 
-var corsOptions = {
-    origin: FRONTEND_URL,
-    //optionsSuccessStatus: 200
-}
-
-console.log("CORS ALLOWING", FRONTEND_URL);
-
-app.use(cors(corsOptions));
+// parse JSON bodies
 app.use(express.json());
-app.use('', routes);
 
-module.exports = app;
+// Mount your routes
+app.use("", routes);
