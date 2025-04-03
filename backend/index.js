@@ -14,6 +14,8 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 // allow that origin in the CORS config:
 app.use(cors({
   origin: FRONTEND_URL,
+  methods: ['GET', 'POST'], // allowed methods
+  credentials: true, // if you need to send cookies or authentication tokens
   // If you need cookies or other credentials, add: credentials: true
 }));
 
