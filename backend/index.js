@@ -5,8 +5,6 @@ const routes = require("./routes");
 
 const app = express();
 
-module.exports = app;
-
 // Add request logging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -43,3 +41,15 @@ app.use(express.json());
 
 // Mount your routes
 app.use("", routes);
+
+// Get the port from environment variable or use 3000 as default
+const port = process.env.PORT || 3000;
+
+// Only start the server if this file is run directly (not required as a module)
+if (require.main === module) {
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+module.exports = app;
