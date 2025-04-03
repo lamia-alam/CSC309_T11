@@ -17,6 +17,15 @@ app.options('*', cors())
 // parse JSON bodies
 app.use(express.json());
 
+app.get('/test', (req, res) => {
+    res.header('Access-Control-Allow-Origin', 'https://csc309t11-production.up.railway.app');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    // Your login logic here
+});
+
 const routes = require("./routes");
 // Mount your routes
 app.use("", routes);
