@@ -8,7 +8,8 @@ const app = express();
 // Enable CORS for all routes
 const allowedOrigins = [
     'http://localhost:5173', // Development frontend
-    'https://csc309t11-production.up.railway.app' // Production frontend
+    'https://csc309t11-production.up.railway.app', // Production frontend
+    'https://backend-production-f9fa.up.railway.app' // Backend URL
 ];
 
 app.use(cors({
