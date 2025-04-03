@@ -22,8 +22,8 @@ app.get('/test', (req, res) => {
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Allow-Credentials', 'true');
-    
-    // Your login logic here
+
+    res.send('Hello World');
 });
 
 const routes = require("./routes");
