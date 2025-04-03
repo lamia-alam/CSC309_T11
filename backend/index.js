@@ -8,10 +8,7 @@ const app = express();
 const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 app.use(cors({
-    origin: frontendURL,
-    //credentials: true,
-    //methods: ['GET', 'POST', 'OPTIONS'],
-    //allowedHeaders: ['Content-Type', 'Authorization']
+    origin: frontendURL
 }));
 
 // parse JSON bodies
