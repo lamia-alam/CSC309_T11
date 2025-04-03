@@ -8,8 +8,8 @@ const app = express();
 // Enable CORS for all routes
 const allowedOrigins = [
     'http://localhost:5173', // Development frontend
-    process.env.FRONTEND_URL // Production frontend
-].filter(Boolean); // Remove any undefined values
+    'https://csc309t11-production.up.railway.app' // Production frontend
+];
 
 app.use(cors({
     origin: function(origin, callback) {
@@ -21,7 +21,9 @@ app.use(cors({
         }
         return callback(null, true);
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // parse JSON bodies
