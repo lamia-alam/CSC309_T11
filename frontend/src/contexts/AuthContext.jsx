@@ -40,10 +40,13 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await fetch(`${BACKEND_URL}/login`, {
-        method: "POST",
+       method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
+        credentials: "include",
+        mode: "cors",
         body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
