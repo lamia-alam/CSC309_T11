@@ -43,10 +43,7 @@ export const AuthProvider = ({ children }) => {
        method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
         },
-        credentials: "include",
-        mode: "cors",
         body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
