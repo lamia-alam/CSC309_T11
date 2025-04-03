@@ -5,14 +5,14 @@ const routes = require("./routes");
 
 const app = express();
 
+const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
 app.use(cors({
-    origin: true,
+    origin: frontendURL,
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-//app.options('*', cors())
 
 // parse JSON bodies
 app.use(express.json());
