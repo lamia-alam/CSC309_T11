@@ -10,6 +10,7 @@ const allowedOrigins = [
     'http://localhost:5173', // Development frontend
     'https://csc309t11-production.up.railway.app', // Production frontend
     'https://backend-production-f9fa.up.railway.app' // Backend URL
+    'csc309_t11.railway.internal'
 ];
 
 app.use(cors({
